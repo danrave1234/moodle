@@ -47,3 +47,14 @@ Feature: Choice dropdown form behat test
     Then the "#fitem_id_disabled button" "css_element" should be disabled
     And the "#fitem_id_initialdisabled button" "css_element" should be disabled
     And the "#fitem_id_initialenabled button" "css_element" should be enabled
+
+  Scenario: A frozen choice dropdown displays and submits its value
+    Given I should see "Text option 2" in the "#fitem_id_frozen" "css_element"
+    When I click on "Send form" "button"
+    Then I should see "frozen: option2" in the "submitted_data" "region"
+
+  @javascript
+  Scenario: Fields depending on a frozen choice dropdown use its value
+    When I expand all fieldsets
+    Then I should not see "Shown if frozen is option 1"
+    And I should see "Text option 2" in the "#fitem_id_frozen" "css_element"

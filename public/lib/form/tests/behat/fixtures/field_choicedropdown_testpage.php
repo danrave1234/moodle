@@ -61,6 +61,8 @@ class test_choice_dropdown extends moodleform {
             'icon' => new pix_icon('t/show', 'Eye icon 3'),
         ]);
 
+        $frozenoptions = $options;
+
         $mform->addElement('header', 'database', "Basic example");
         $mform->addElement('choicedropdown', 'example0', "Basic choice dropdown", $options);
 
@@ -106,6 +108,14 @@ class test_choice_dropdown extends moodleform {
         $mform->disabledIf('disabledinput', 'example3', 'eq', 'hide');
         $mform->setDefault('disabledinput', 'Is this enabled?');
         $mform->setType('disabledinput', PARAM_TEXT);
+
+        $mform->addElement('header', 'frozenheader', 'Frozen choice dropdown');
+        $mform->addElement('choicedropdown', 'frozen', 'Frozen choice dropdown', $frozenoptions);
+        $mform->setDefault('frozen', 'option2');
+        $mform->freeze('frozen');
+        $mform->addElement('text', 'frozendependent', 'Shown if frozen is option 1', ['maxlength' => 80, 'size' => 50]);
+        $mform->hideIf('frozendependent', 'frozen', 'neq', 'option1');
+        $mform->setType('frozendependent', PARAM_TEXT);
 
         $this->add_action_buttons(false, 'Send form');
     }
