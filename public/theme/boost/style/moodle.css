@@ -30077,9 +30077,13 @@ textarea.form-control-lg {
  * tints them in 5% steps and returns the first tint which reaches the required contrast, so that the dark palette
  * keeps meeting WCAG AA even when a site changes the brand colour.
  *
+ * A colour which will be drawn translucent passes its opacity, so that the contrast is measured once it has been
+ * blended into the surface rather than at full strength.
+ *
  * @param {Color} $color The colour to lighten.
  * @param {Color} $background The surface the colour is drawn on.
  * @param {Number} $min The contrast ratio to reach.
+ * @param {Number} $alpha The opacity the colour will be drawn with.
  * @return {Color}
  */
 /* core.less */
@@ -53849,6 +53853,7 @@ input[type=button].btn-block {
   --mds-border-interactive-primary-hover: #3f89cc;
   --mds-border-interactive-primary-active: #7baedc;
   --mds-border-interactive-primary-disabled: #3a658d;
+  --mds-focus-default: #3f89cc;
   --mds-text-default: #dee2e6;
   --mds-text-emphasis: #f8f9fa;
   --mds-text-subtle: #ced4da;
@@ -53864,7 +53869,7 @@ input[type=button].btn-block {
   --bs-info-text-emphasis: #66b3c0;
   --bs-warning-text-emphasis: #f0ad4e;
   --bs-danger-text-emphasis: #e28e84;
-  --bs-focus-ring-color: rgba(63, 137, 204, 0.75);
+  --bs-focus-ring-color: rgba(111, 167, 217, 0.75);
   --mds-text-link-primary-default: #7baedc;
   --mds-text-link-primary-hover: #b7d3ec;
   --mds-text-link-primary-disabled: #8f959e;

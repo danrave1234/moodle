@@ -51,15 +51,19 @@ $dark-min-contrast: 4.6 !default;
  * tints them in 5% steps and returns the first tint which reaches the required contrast, so that the dark palette
  * keeps meeting WCAG AA even when a site changes the brand colour.
  *
+ * A colour which will be drawn translucent passes its opacity, so that the contrast is measured once it has been
+ * blended into the surface rather than at full strength.
+ *
  * @param {Color} $color The colour to lighten.
  * @param {Color} $background The surface the colour is drawn on.
  * @param {Number} $min The contrast ratio to reach.
+ * @param {Number} $alpha The opacity the colour will be drawn with.
  * @return {Color}
  */
-@function dark-readable($color, $background: $dark-surface-raised, $min: $dark-min-contrast) {
+@function dark-readable($color, $background: $dark-surface-raised, $min: $dark-min-contrast, $alpha: 1) {
     $readable: $color;
     @for $step from 1 through 20 {
-        @if contrast-ratio($background, $readable) < $min {
+        @if contrast-ratio($background, rgba($readable, $alpha)) < $min {
             $readable: tint-color($color, percentage($step * 0.05));
         }
     }
