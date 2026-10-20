@@ -82,6 +82,12 @@ $card-group-margin: .25rem;
 
 // Inputs
 $focus-ring-opacity: .75 !default;
+// The focus rings of form controls and of Moodle's own components are drawn from the custom property rather than the
+// compiled colour, so that they follow the current colour mode, see scss/moodle/dark.scss.
+$focus-ring-width: .25rem !default;
+$focus-ring-blur: 0 !default;
+$focus-ring-box-shadow: 0 0 $focus-ring-blur $focus-ring-width var(--#{$prefix}focus-ring-color) !default;
+$input-btn-focus-color: var(--#{$prefix}focus-ring-color) !default;
 $input-border-color: var(--#{$prefix}gray-500) !default;
 $form-check-input-border: var(--#{$prefix}border-width) solid var(--#{$prefix}gray-500) !default;
 $form-switch-color: rgba($black, .45) !default;
