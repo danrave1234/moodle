@@ -49,10 +49,14 @@
     }
 }
 
-@include media-breakpoint-down(md) {
+// Below xl the primary navigation moves into the drawer, so the right-hand navbar items fit.
+@include media-breakpoint-down(xl) {
     .primary-navigation {
         display: none;
     }
+}
+
+@include media-breakpoint-down(md) {
     // Targets the label text specifically (not .mds-switch-control, which also wraps the
     // indicator/track/thumb): hiding the whole control would hide the switch itself, not just
     // its text, since the design system's Switch nests the indicator inside its own <label>.
