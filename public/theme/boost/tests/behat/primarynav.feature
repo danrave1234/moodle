@@ -61,6 +61,32 @@ Feature: Primary navigation
     And I click on "[data-region='site-home-link']" "css_element"
     And I should see "Dashboard" in the "page-header" "region"
 
+  @javascript @theme_boost
+  Scenario: Users could use the primary nav and user menus on tablet size screens
+    Given the following config values are set as admin:
+      | enableglobalsearch | 1 |
+    And the following config values are set as admin:
+      | enablecolourmodes | 1 | theme_boost |
+    And I change viewport size to "816x1024"
+    And I log in as "admin"
+    And I should see "Dashboard" in the "page-header" "region"
+    And "Edit mode" "field" should exist
+    Then "Home" "link" should not be visible
+    And I follow "Preferences" in the user menu
+    And I should see "Preferences" in the "region-main" "region"
+    And I click on "Side panel" "button"
+    And I should see "Home" in the "theme_boost-drawers-primary" "region"
+    # The primary navigation stays in the drawer up to the xl breakpoint (1200px).
+    And I change viewport size to "1100x900"
+    And I reload the page
+    And "Home" "link" should not be visible
+    And I click on "Side panel" "button"
+    And I should see "Home" in the "theme_boost-drawers-primary" "region"
+    And I change viewport size to "1366x900"
+    And I reload the page
+    And "Side panel" "button" should not be visible
+    And I should see "Home" in the ".primary-navigation" "css_element"
+
   @theme_boost
   Scenario: Guest users can only see the Home and Calendar items in the primary navigation menu
     Given I log in as "guest"

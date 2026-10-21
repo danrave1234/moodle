@@ -27,8 +27,13 @@
         background-color: var(--#{$prefix}gray-300);
     }
 
-    #usernavigation .nav-link {
-        padding: 0 $primary-nav-padding-x;
+    #usernavigation {
+        // Lets the inline search field give up space when the items don't fit (see .search-input-inline).
+        min-width: 0;
+
+        .nav-link {
+            padding: 0 $primary-nav-padding-x;
+        }
     }
     .login {
         display: flex;
@@ -234,6 +239,8 @@
 
     @include media-breakpoint-up(md) {
         padding: 0 $primary-nav-padding-x;
+        // Let the field shrink, rather than push the user menu off-screen when space is short.
+        min-width: 0;
 
         .search-toggle {
             display: none;
@@ -241,9 +248,12 @@
 
         .searchform-navbar {
             display: block;
+            min-width: 0;
 
             .input-group {
                 width: 256px;
+                max-width: 100%;
+                flex-wrap: nowrap;
             }
         }
     }
