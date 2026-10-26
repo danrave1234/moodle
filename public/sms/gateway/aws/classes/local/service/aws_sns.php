@@ -19,6 +19,7 @@ namespace smsgateway_aws\local\service;
 use core_sms\message_status;
 use smsgateway_aws\helper;
 use smsgateway_aws\local\aws_sms_service_provider;
+use smsgateway_aws\local\sns_client_factory;
 use stdClass;
 
 /**
@@ -49,7 +50,7 @@ class aws_sns implements aws_sms_service_provider {
                 'secret' => $config->api_secret,
             ];
         }
-        $client = new \Aws\Sns\SnsClient($params);
+        $client = \core\di::get(sns_client_factory::class)->create_client($params);
 
         // Set up the sender information.
         $senderid = $SITE->shortname;
@@ -75,7 +76,7 @@ class aws_sns implements aws_sms_service_provider {
             ]);
             return \core_sms\message_status::GATEWAY_SENT;
         } catch (\Aws\Exception\AwsException $e) {
-            return \core_sms\message_status::GATEWAY_NOT_AVAILABLE;
+            return \core_sms\message_status::GATEWAY_FAILED;
         }
     }
 }
