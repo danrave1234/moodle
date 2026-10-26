@@ -1489,18 +1489,26 @@ $string['new'] = 'New';
 $string['newaccount'] = 'New account';
 $string['newactivityname'] = 'New name for activity {$a}';
 $string['newcourse'] = 'New course';
-$string['newloginnotificationtitle'] = 'New sign in to your {$a} account';
-$string['newloginnotificationbodysmall'] = 'Your {$a} account was just signed in to from a new device.';
-$string['newloginnotificationbodyfull'] = '<p>Hi {$a->userfullname},</p>
-<p>Your {$a->sitename} account was just signed in to from a new device.</p>
+$string['newloginnotificationbody'] = '<p>Hi {$a->firstname},</p>
+<p>Someone just logged in to your {$a->sitename} account from a new network and a browser we haven\'t seen before. We let you know each time this happens, so you can spot anything unexpected.</p>
 <ul>
-<li>Your account: {$a->username} {$a->useremail}</li>
-<li>{$a->logintime}</li>
-<li>Device: {$a->logindevice}</li>
-<li>IP: {$a->loginip}</li>
+{$a->browserline}<li><strong>When:</strong> {$a->logintime} ({$a->timezone})</li>
+<li>{$a->place}</li>
 </ul>
-<p>If this was you, then you don\'t need to do anything.</p>
-<p>If you don\'t recognise this activity, please <a href="{$a->changepasswordlink}">change your password</a>.</p>';
+<p><strong>Was this you?</strong> You don\'t need to do anything.</p>
+<p><strong>Don\'t recognise it?</strong> {$a->notyou}</p>
+{$a->sessionslink}{$a->optout}';
+$string['newloginnotificationbrowser'] = '<strong>Browser:</strong> {$a}';
+$string['newloginnotificationdevice'] = '{$a->browser} on {$a->os}';
+$string['newloginnotificationip'] = '<strong>IP address:</strong> {$a}';
+$string['newloginnotificationlocation'] = '<strong>Location:</strong> {$a}';
+$string['newloginnotificationnotyou'] = 'Review where you\'re logged in and log out of any sessions you don\'t recognise, then <a href="{$a}">change your password</a>.';
+$string['newloginnotificationnotyounosessions'] = '<a href="{$a}">Change your password</a>.';
+$string['newloginnotificationoptout'] = '<p>You can turn off these emails in your <a href="{$a}">notification preferences</a>.</p>';
+$string['newloginnotificationsessions'] = '<p><a href="{$a}">Review your browser sessions</a></p>';
+$string['newloginnotificationsmall'] = '{$a}. Not you? Review your browser sessions.';
+$string['newloginnotificationsubject'] = 'New login to {$a->sitename} from {$a->device}';
+$string['newloginnotificationsubjectnodevice'] = 'New login to {$a}';
 $string['newpassword'] = 'New password';
 $string['newpassword_help'] = 'Enter a new password or leave blank to keep current password.';
 $string['newpasswordfromlost'] = '<strong>NOTICE:</strong> Your <strong>Current password</strong> will have been sent to you in the <strong>second</strong> of the two emails sent as part of the lost password recovery process. Make sure you have received your replacement password before continuing with this screen.';
@@ -2585,3 +2593,15 @@ $string['modhidden_help'] = '* Hide on course page: Not available to students. T
 
 // Deprecated since Moodle 6.0.
 $string['deletecheckfull'] = 'Are you sure you want to delete user {$a}, including data such as profile details, enrolments, group and cohort membership and some user activity data?';
+$string['newloginnotificationbodyfull'] = '<p>Hi {$a->userfullname},</p>
+<p>Your {$a->sitename} account was just signed in to from a new device.</p>
+<ul>
+<li>Your account: {$a->username} {$a->useremail}</li>
+<li>{$a->logintime}</li>
+<li>Device: {$a->logindevice}</li>
+<li>IP: {$a->loginip}</li>
+</ul>
+<p>If this was you, then you don\'t need to do anything.</p>
+<p>If you don\'t recognise this activity, please <a href="{$a->changepasswordlink}">change your password</a>.</p>';
+$string['newloginnotificationbodysmall'] = 'Your {$a} account was just signed in to from a new device.';
+$string['newloginnotificationtitle'] = 'New sign in to your {$a} account';
