@@ -119,3 +119,6 @@ noscales,core_grades
 homeheader,core
 revokedapitoken,core_error
 deletecheckfull,core
+newloginnotificationbodyfull,core
+newloginnotificationbodysmall,core
+newloginnotificationtitle,core
