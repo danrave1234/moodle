@@ -1,0 +1,7 @@
+issueNumber: MDL-90249
+notes:
+  core_course:
+    - message: >-
+        `core_course_get_contents` no longer returns an empty `activitybadge`
+        for modules whose badge has no content. The key is now omitted.
+      type: changed
