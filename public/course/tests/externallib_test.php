@@ -24,6 +24,7 @@ use core_external\external_api;
  * @copyright  2012 Jerome Mouneyrac
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[\PHPUnit\Framework\Attributes\CoversMethod(\core_course_external::class, 'get_course_contents')]
 final class externallib_test extends \core_external\tests\externallib_testcase {
     /**
      * Tests set up
@@ -1676,6 +1677,36 @@ final class externallib_test extends \core_external\tests\externallib_testcase {
         $customdata = json_decode($result[0]['modules'][0]['customdata']);
         $displayoptions = unserialize($customdata->displayoptions);
         $this->assertEquals('text/plain', $displayoptions['filedetails']['mimetype']);
+    }
+
+    /**
+     * Test activitybadge is only returned for modules whose badge has content.
+     */
+    public function test_get_course_contents_activitybadge(): void {
+        $this->resetAfterTest(true);
+
+        $this->setAdminUser();
+        $course = self::getDataGenerator()->create_course();
+        $generator = self::getDataGenerator();
+
+        // Forum and File both have an activity badge class, but these have no badge content.
+        $forum = $generator->create_module('forum', ['course' => $course->id, 'name' => 'Forum without unread posts']);
+        $filenotype = $generator->create_module('resource', ['course' => $course->id, 'showtype' => 0]);
+        // This File shows its type, so its badge has content.
+        $filetype = $generator->create_module('resource', ['course' => $course->id, 'showtype' => 1]);
+        // Page has no activity badge class.
+        $page = $generator->create_module('page', ['course' => $course->id]);
+
+        $result = core_course_external::get_course_contents($course->id);
+        $result = external_api::clean_returnvalue(core_course_external::get_course_contents_returns(), $result);
+        $modules = array_column($result[0]['modules'], null, 'id');
+        $this->assertCount(4, $modules);
+
+        $this->assertArrayNotHasKey('activitybadge', $modules[$forum->cmid]);
+        $this->assertArrayNotHasKey('activitybadge', $modules[$filenotype->cmid]);
+        $this->assertArrayNotHasKey('activitybadge', $modules[$page->cmid]);
+        $this->assertEquals('TXT', $modules[$filetype->cmid]['activitybadge']['badgecontent']);
+        $this->assertEquals('badge-none', $modules[$filetype->cmid]['activitybadge']['badgestyle']);
     }
 
     /**

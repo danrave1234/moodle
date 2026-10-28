@@ -286,7 +286,7 @@ class core_course_external extends external_api {
                         $module['onclick'] = $cm->onclick;
                         $module['afterlink'] = $cm->afterlink;
                         $activitybadgedata = $cm->get_activitybadge();
-                        if (!empty($activitybadgedata)) {
+                        if (!empty($activitybadgedata->badgecontent)) {
                             $module['activitybadge'] = $activitybadgedata;
                         }
                         $module['customdata'] = json_encode($cm->customdata);
