@@ -72,8 +72,6 @@ $string['auth_ldap_opt_deref_key'] = 'Dereference aliases';
 $string['auth_ldap_passtype'] = 'Specify the format of new or changed passwords in LDAP server.';
 $string['auth_ldap_passtype_key'] = 'Password format';
 $string['auth_ldap_passwdexpire_settings'] = 'LDAP password expiry settings';
-$string['auth_ldap_preventpassindb'] = 'Select yes to prevent passwords from being stored in Moodle\'s database.';
-$string['auth_ldap_preventpassindb_key'] = 'Prevent password caching';
 $string['auth_ldap_rolecontext'] = '{$a->localname} context';
 $string['auth_ldap_rolecontext_help'] = 'LDAP context used to select for <i>{$a->localname}</i> mapping. Separate multiple groups with \';\'. Usually something like "cn={$a->shortname},ou=first-ou-with-role-groups,o=myorg; cn={$a->shortname},ou=second-ou-with-role-groups,o=myorg".';
 $string['auth_ldap_search_sub'] = 'Search users from subcontexts.';

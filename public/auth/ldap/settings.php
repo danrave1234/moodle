@@ -85,11 +85,6 @@ if ($ADMIN->fulltree) {
         $settings->add(new admin_setting_heading('auth_ldap/ldapbindsettings',
                 new lang_string('auth_ldap_bind_settings', 'auth_ldap'), ''));
 
-        // Store Password in DB.
-        $settings->add(new admin_setting_configselect('auth_ldap/preventpassindb',
-                new lang_string('auth_ldap_preventpassindb_key', 'auth_ldap'),
-                new lang_string('auth_ldap_preventpassindb', 'auth_ldap'), 0 , $yesno));
-
         // User ID.
         $settings->add(new admin_setting_configtext('auth_ldap/bind_dn',
                 get_string('auth_ldap_bind_dn_key', 'auth_ldap'),

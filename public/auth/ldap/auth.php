@@ -1608,10 +1608,13 @@ class auth_plugin_ldap extends auth_plugin_base {
     /**
      * Indicates if password hashes should be stored in local moodle database.
      *
+     * Passwords are not cached unless the site sets 'preventpassindb' to 0, for example in config.php with
+     * $CFG->forced_plugin_settings = ['auth_ldap' => ['preventpassindb' => 0]];
+     *
      * @return bool true means flag 'not_cached' stored instead of password hash
      */
-    function prevent_local_passwords() {
-        return !empty($this->config->preventpassindb);
+    public function prevent_local_passwords() {
+        return !isset($this->config->preventpassindb) || !empty($this->config->preventpassindb);
     }
 
     /**

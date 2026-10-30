@@ -395,6 +395,52 @@ final class auth_ldap_test extends \advanced_testcase {
     }
 
     /**
+     * Data provider for {@see test_prevent_local_passwords}.
+     *
+     * @return array[]
+     */
+    public static function prevent_local_passwords_provider(): array {
+        return [
+            'Not set (default)' => [null, true],
+            'Caching allowed' => ['0', false],
+            'Caching prevented' => ['1', true],
+        ];
+    }
+
+    /**
+     * Test LDAP user passwords are only stored in the Moodle database when the site allows it.
+     *
+     * @param string|null $preventpassindb Value of the preventpassindb setting, null when not set.
+     * @param bool $expected Whether local passwords are prevented.
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('prevent_local_passwords_provider')]
+    public function test_prevent_local_passwords(?string $preventpassindb, bool $expected): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        unset_config('preventpassindb', 'auth_ldap');
+        if ($preventpassindb !== null) {
+            set_config('preventpassindb', $preventpassindb, 'auth_ldap');
+        }
+
+        $ldap = new \auth_plugin_ldap();
+        $this->assertSame($expected, $ldap->prevent_local_passwords());
+
+        // Updating the password, as done after each login, stores a hash only when caching is allowed.
+        $user = $this->getDataGenerator()->create_user(['auth' => 'ldap']);
+        $passwordapi = \core\di::get(\core\authentication\password::class);
+        $passwordapi->update($user, 'Ldap-Password-1');
+
+        $user = $DB->get_record('user', ['id' => $user->id]);
+        if ($expected) {
+            $this->assertSame(AUTH_PASSWORD_NOT_CACHED, $user->password);
+        } else {
+            $this->assertTrue($passwordapi->validate($user, 'Ldap-Password-1'));
+        }
+    }
+
+    /**
      * Test logging in via LDAP calls a user_loggedin event.
      */
     public function test_ldap_user_loggedin_event(): void {

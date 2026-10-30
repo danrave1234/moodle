@@ -1,0 +1,12 @@
+issueNumber: MDL-84949
+notes:
+  auth_ldap:
+    - message: >-
+        LDAP user passwords are no longer cached in the Moodle database by
+        default, and the "Prevent password caching" (preventpassindb) setting
+        has been removed from the admin interface. New sites default to no
+        caching. Existing sites keep their current value. To change it, set
+        `$CFG->forced_plugin_settings = ["auth_ldap" => ["preventpassindb" =>
+        1]];` in config.php (use 0 to allow caching), or use `admin/cli/cfg.php
+        --component=auth_ldap --name=preventpassindb --set=1`.
+      type: changed
