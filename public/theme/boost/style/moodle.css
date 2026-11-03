@@ -45895,6 +45895,9 @@ div.editor_atto_toolbar button .icon {
   width: 1px;
   background-color: var(--bs-gray-300);
 }
+.navbar.fixed-top #usernavigation {
+  min-width: 0;
+}
 .navbar.fixed-top #usernavigation .nav-link {
   padding: 0 0.5rem;
 }
@@ -46077,21 +46080,25 @@ div.editor_atto_toolbar button .icon {
 .navbar.fixed-top #usernavigation .search-input-inline .searchform-navbar .search-close .icon {
   margin: 0;
 }
-@media (min-width: 768px) {
+@media (min-width: 1200px) {
   .navbar.fixed-top #usernavigation .search-input-inline {
     padding: 0 0.5rem;
+    min-width: 0;
   }
   .navbar.fixed-top #usernavigation .search-input-inline .search-toggle {
     display: none;
   }
   .navbar.fixed-top #usernavigation .search-input-inline .searchform-navbar {
     display: block;
+    min-width: 0;
   }
   .navbar.fixed-top #usernavigation .search-input-inline .searchform-navbar .input-group {
     width: 256px;
+    max-width: 100%;
+    flex-wrap: nowrap;
   }
 }
-@media (max-width: 767.98px) {
+@media (max-width: 1199.98px) {
   .navbar.fixed-top #usernavigation .search-input-inline.expanded {
     position: absolute;
     top: 0;
@@ -46980,10 +46987,12 @@ div.editor_atto_toolbar button .icon {
   opacity: 0;
 }
 
-@media (max-width: 767.98px) {
+@media (max-width: 991.98px) {
   .primary-navigation {
     display: none;
   }
+}
+@media (max-width: 767.98px) {
   .editmode-switch-form .mds-switch-label {
     width: 1px !important;
     height: 1px !important;
