@@ -501,19 +501,9 @@ class manager {
      * @return bool
      */
     public function is_action_available(string $actionclass): bool {
+        // Only enabled and configured provider instances that have the action enabled are returned.
         $providers = $this->get_providers_for_actions([$actionclass], true);
-        // Check if the requested action is enabled for at least one provider.
-        foreach ($providers as $provideractions) {
-            foreach ($provideractions as $provider) {
-                $classnamearray = explode('\\', $provider::class);
-                $pluginname = reset($classnamearray);
-                if ($this->is_action_enabled($pluginname, $actionclass)) {
-                    return true;
-                }
-            }
-        }
-        // There are no providers with this action enabled.
-        return false;
+        return !empty($providers[$actionclass]);
     }
 
     /**
