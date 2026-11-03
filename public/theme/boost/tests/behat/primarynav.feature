@@ -61,6 +61,44 @@ Feature: Primary navigation
     And I click on "[data-region='site-home-link']" "css_element"
     And I should see "Dashboard" in the "page-header" "region"
 
+  @javascript @theme_boost
+  Scenario: Users can use the side panel and user menu below 992px
+    Given the following config values are set as admin:
+      | enableglobalsearch | 1 |             |
+      | enablecolourmodes  | 1 | theme_boost |
+    And I change viewport size to "816x1024"
+    When I log in as "admin"
+    And I follow "Preferences" in the user menu
+    And I click on "Side panel" "button"
+    And I click on "Dashboard" "link" in the "theme_boost-drawers-primary" "region"
+    Then I should see "Dashboard" in the "page-header" "region"
+    And ".primary-navigation" "css_element" should not be visible
+    And "Search" "field" in the "usernavigation" "region" should not be visible
+
+  @javascript @theme_boost
+  Scenario: Users see the primary navigation and a search icon between 992px and 1199px
+    Given the following config values are set as admin:
+      | enableglobalsearch | 1 |             |
+      | enablecolourmodes  | 1 | theme_boost |
+    And I change viewport size to "1100x900"
+    When I log in as "admin"
+    And I click on "Toggle search input" "button"
+    Then "Search" "field" in the "usernavigation" "region" should be visible
+    And "Side panel" "button" should not be visible
+    And I should see "Home" in the ".primary-navigation" "css_element"
+
+  @javascript @theme_boost
+  Scenario: Users see the primary navigation and the search field from 1200px
+    Given the following config values are set as admin:
+      | enableglobalsearch | 1 |             |
+      | enablecolourmodes  | 1 | theme_boost |
+    And I change viewport size to "1366x900"
+    When I log in as "admin"
+    Then "Search" "field" in the "usernavigation" "region" should be visible
+    And "Toggle search input" "button" should not be visible
+    And "Side panel" "button" should not be visible
+    And I should see "Home" in the ".primary-navigation" "css_element"
+
   @theme_boost
   Scenario: Guest users can only see the Home and Calendar items in the primary navigation menu
     Given I log in as "guest"
