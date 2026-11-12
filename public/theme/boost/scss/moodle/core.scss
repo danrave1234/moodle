@@ -2070,6 +2070,8 @@ $footer-link-color: $bg-inverse-link-color !default;
 }
 
 // Fix the position of the footer related elements when a sticky footer is present.
+// The root element needs the height as well: it is the scroll container, and it cannot inherit it from body.
+html:has(> body.hasstickyfooter),
 .hasstickyfooter {
     &:has(.sticky-footer-content-wrapper) {
         --sticky-footer-total-height: #{$stickyfooter-height};
@@ -2080,6 +2082,9 @@ $footer-link-color: $bg-inverse-link-color !default;
     &:has(.sticky-footer-content-wrapper):has(.sticky-footer-supplementary-wrapper) {
         --sticky-footer-total-height: calc(#{$stickyfooter-height} + #{$stickyfooter-supplementary-height});
     }
+}
+
+.hasstickyfooter {
     .btn-footer-popover {
         bottom: calc(1rem + var(--sticky-footer-total-height, 4rem));
     }
