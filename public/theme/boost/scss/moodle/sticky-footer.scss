@@ -60,6 +60,12 @@ body {
     bottom: 0;
 }
 
+// Keep keyboard focus clear of the footer when the browser scrolls a focused element into view (WCAG 2.4.11).
+// The extra gap keeps the focus ring visible above the footer edge.
+html:has(> body.hasstickyfooter) {
+    scroll-padding-bottom: calc(#{$stickyfooter-height} + #{$mds-spacing-xs});
+}
+
 /* Standard components fixes for sticky footer. */
 
 .stickyfooter ul.pagination {

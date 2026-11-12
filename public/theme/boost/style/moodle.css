@@ -38993,6 +38993,10 @@ body {
   bottom: 0;
 }
 
+html:has(> body.hasstickyfooter) {
+  scroll-padding-bottom: calc(max(80px, 1rem * 3) + 0.5rem);
+}
+
 /* Standard components fixes for sticky footer. */
 .stickyfooter ul.pagination {
   margin-bottom: 0.25rem;
