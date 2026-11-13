@@ -349,15 +349,142 @@ const enablePopovers = () => {
  */
 const enableTooltips = (rootElement = document) => {
     const tooltipTriggerList = rootElement.querySelectorAll('[data-bs-toggle="tooltip"]');
-    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new Bootstrap.Tooltip(tooltipTriggerEl));
+    tooltipTriggerList.forEach(tooltipTriggerEl => new Bootstrap.Tooltip(tooltipTriggerEl));
+};
 
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') {
-            tooltipList.forEach(tooltip => {
-                tooltip.hide();
-            });
+/**
+ * Make every Bootstrap tooltip on the page hoverable and dismissible (WCAG 2.2 SC 1.4.13 Content on Hover or Focus).
+ *
+ * Bootstrap hides a tooltip as soon as the pointer leaves its trigger, so the pointer cannot be moved onto the tooltip.
+ * While the pointer is on a tooltip, or crossing the gap between the trigger and the tooltip, the hide is cancelled;
+ * the tooltip is hidden once the pointer moves elsewhere. Escape hides every shown tooltip without moving the focus.
+ *
+ * This applies to all tooltips, wherever they are created.
+ */
+const enableHoverableTooltips = () => {
+    // The tooltip element of each trigger whose tooltip is in the page.
+    const shownTooltips = new Map();
+    // The last known pointer position, or null if unknown.
+    let pointer = null;
+    // The trigger whose tooltip is kept shown because the pointer is on it.
+    let heldTrigger = null;
+    // Set while this code hides a tooltip, so that the hide is not cancelled.
+    let dismissing = false;
+
+    const isInside = (rect, x, y) => x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+
+    /**
+     * Whether the pointer is on the tooltip, or between the trigger and the tooltip.
+     *
+     * @param {HTMLElement} trigger
+     * @param {HTMLElement} tooltip
+     * @returns {boolean}
+     */
+    const isPointerOnTooltip = (trigger, tooltip) => {
+        if (!tooltip.isConnected) {
+            return false;
+        }
+        if (tooltip.matches(':hover')) {
+            // The browser keeps this up to date even when the page scrolls without the pointer moving.
+            return true;
+        }
+        if (!pointer) {
+            return false;
+        }
+        const triggerRect = trigger.getBoundingClientRect();
+        if (isInside(triggerRect, pointer.x, pointer.y)) {
+            // Bootstrap itself keeps the tooltip while the pointer is on the trigger, so a hide now was requested on purpose.
+            return false;
+        }
+        // The smallest rectangle around both the trigger and the tooltip includes the gap between them.
+        const tooltipRect = tooltip.getBoundingClientRect();
+        const area = {
+            left: Math.min(triggerRect.left, tooltipRect.left),
+            right: Math.max(triggerRect.right, tooltipRect.right),
+            top: Math.min(triggerRect.top, tooltipRect.top),
+            bottom: Math.max(triggerRect.bottom, tooltipRect.bottom),
+        };
+        return isInside(area, pointer.x, pointer.y);
+    };
+
+    const hideTooltip = (trigger) => {
+        if (heldTrigger === trigger) {
+            heldTrigger = null;
+        }
+        const instance = Bootstrap.Tooltip.getInstance(trigger);
+        if (!instance) {
+            // The tooltip was disposed.
+            shownTooltips.delete(trigger);
+            return;
+        }
+        dismissing = true;
+        try {
+            instance.hide();
+        } finally {
+            dismissing = false;
+        }
+    };
+
+    // Capture phase: some callers remove aria-describedby from the trigger once the tooltip is inserted.
+    document.addEventListener('inserted.bs.tooltip', e => {
+        const tooltip = document.getElementById(e.target.getAttribute('aria-describedby'));
+        if (tooltip) {
+            shownTooltips.set(e.target, tooltip);
+        }
+    }, true);
+
+    document.addEventListener('hidden.bs.tooltip', e => {
+        shownTooltips.delete(e.target);
+        if (heldTrigger === e.target) {
+            heldTrigger = null;
         }
     });
+
+    document.addEventListener('hide.bs.tooltip', e => {
+        const tooltip = shownTooltips.get(e.target);
+        if (dismissing || !tooltip || !isPointerOnTooltip(e.target, tooltip)) {
+            return;
+        }
+        e.preventDefault();
+        if (heldTrigger && heldTrigger !== e.target) {
+            hideTooltip(heldTrigger);
+        }
+        heldTrigger = e.target;
+    });
+
+    document.addEventListener('mousemove', e => {
+        pointer = {x: e.clientX, y: e.clientY};
+        if (!heldTrigger) {
+            return;
+        }
+        const tooltip = shownTooltips.get(heldTrigger);
+        if (tooltip && isInside(heldTrigger.getBoundingClientRect(), pointer.x, pointer.y)) {
+            // Back on the trigger: Bootstrap handles the hover from here.
+            heldTrigger = null;
+        } else if (!tooltip || !isPointerOnTooltip(heldTrigger, tooltip)) {
+            hideTooltip(heldTrigger);
+        }
+    }, {passive: true});
+
+    // The pointer left the window.
+    document.addEventListener('mouseout', e => {
+        if (!e.relatedTarget && heldTrigger) {
+            pointer = null;
+            hideTooltip(heldTrigger);
+        }
+    });
+
+    // The pointer position is not updated while dragging, so do not rely on it.
+    document.addEventListener('dragstart', () => {
+        pointer = null;
+    });
+
+    // Capture phase: menus and dialogs may stop Escape from reaching the document.
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            [...shownTooltips.keys()].forEach(hideTooltip);
+        }
+    }, true);
 };
 
 /**
@@ -388,6 +515,7 @@ rememberTabs();
 enablePopovers();
 
 // Enable all tooltips.
+enableHoverableTooltips();
 enableTooltips();
 enableTooltipsOnContentUpdated();
 

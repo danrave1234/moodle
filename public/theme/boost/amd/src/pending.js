@@ -123,8 +123,16 @@ export default () => {
             const eventEnd = `${pair.end}.bs.${key}`;
             jQuery(document.body).on(eventStart, e => {
                 M.util.js_pending(eventEnd);
-                jQuery(e.target).one(eventEnd, () => {
+                const complete = () => {
                     M.util.js_complete(eventEnd);
+                };
+                jQuery(e.target).one(eventEnd, complete);
+                // A cancelled start event is never followed by its end event, so stop waiting for it.
+                queueMicrotask(() => {
+                    if (e.isDefaultPrevented() || e.originalEvent?.defaultPrevented) {
+                        jQuery(e.target).off(eventEnd, complete);
+                        complete();
+                    }
                 });
             });
 
