@@ -46,6 +46,7 @@ use auth_ldap\task\{
  * @copyright  2013 Petr Skoda {@link http://skodak.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+#[\PHPUnit\Framework\Attributes\CoversClass(\auth_plugin_ldap::class)]
 final class auth_ldap_test extends \advanced_testcase {
 
     public static function setUpBeforeClass(): void {

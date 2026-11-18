@@ -166,3 +166,7 @@ $string['diag_emptycontext'] = 'Empty context found.';
 $string['diag_contextnotfound'] = 'Context {$a} doesn\'t exist or can\'t be read by bind DN.';
 $string['diag_rolegroupnotfound'] = 'Group {$a->group} for role {$a->localname} doesn\'t exist or can\'t be read by bind DN.';
 $string['privacy:metadata'] = 'The LDAP server authentication plugin does not store any personal data.';
+
+// Deprecated since Moodle 6.0.
+$string['auth_ldap_preventpassindb'] = 'Select yes to prevent passwords from being stored in Moodle\'s database.';
+$string['auth_ldap_preventpassindb_key'] = 'Prevent password caching';
