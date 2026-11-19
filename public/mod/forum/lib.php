@@ -6840,7 +6840,13 @@ function mod_forum_user_preferences() {
             $discussionlistvault::SORTORDER_CREATED_DESC,
             $discussionlistvault::SORTORDER_CREATED_ASC,
             $discussionlistvault::SORTORDER_REPLIES_DESC,
-            $discussionlistvault::SORTORDER_REPLIES_ASC
+            $discussionlistvault::SORTORDER_REPLIES_ASC,
+            $discussionlistvault::SORTORDER_DISCUSSION_DESC,
+            $discussionlistvault::SORTORDER_DISCUSSION_ASC,
+            $discussionlistvault::SORTORDER_STARTER_DESC,
+            $discussionlistvault::SORTORDER_STARTER_ASC,
+            $discussionlistvault::SORTORDER_GROUP_DESC,
+            $discussionlistvault::SORTORDER_GROUP_ASC,
         )
     );
     $preferences['forum_useexperimentalui'] = [

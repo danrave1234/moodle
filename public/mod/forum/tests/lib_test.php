@@ -16,6 +16,7 @@
 
 namespace mod_forum;
 
+use mod_forum\local\vaults\discussion_list;
 use mod_forum_generator;
 
 defined('MOODLE_INTERNAL') || die();
@@ -38,7 +39,17 @@ require_once($CFG->dirroot . '/rating/lib.php');
 #[\PHPUnit\Framework\Attributes\CoversFunction('forum_check_throttling')]
 #[\PHPUnit\Framework\Attributes\CoversFunction('forum_count_discussions')]
 #[\PHPUnit\Framework\Attributes\CoversFunction('forum_reset_userdata')]
+#[\PHPUnit\Framework\Attributes\CoversFunction('mod_forum_user_preferences')]
 final class lib_test extends \advanced_testcase {
+
+    /**
+     * Load the user preferences web service used by the sort order tests.
+     */
+    public static function setUpBeforeClass(): void {
+        global $CFG;
+        require_once($CFG->dirroot . '/user/externallib.php');
+        parent::setUpBeforeClass();
+    }
 
     public function setUp(): void {
         parent::setUp();
@@ -4299,5 +4310,63 @@ final class lib_test extends \advanced_testcase {
 
         $this->assertEquals($forum->duedate + (DAYSECS * 2), $instance->duedate);
         $this->assertEquals($forum->cutoffdate + (DAYSECS * 2), $instance->cutoffdate);
+    }
+
+    /**
+     * Test that each discussion list sort order is kept when saved through the user preferences web service.
+     *
+     * @param int $sortorder The sort order to save.
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('discussion_list_sort_order_provider')]
+    public function test_discussion_list_sort_order_preference(int $sortorder): void {
+        $this->resetAfterTest();
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+
+        \core_user_external::update_user_preferences($user->id, null, [
+            ['type' => 'forum_discussionlistsortorder', 'value' => $sortorder],
+        ]);
+
+        $this->assertEquals($sortorder, get_user_preferences('forum_discussionlistsortorder', null, $user->id));
+    }
+
+    /**
+     * Provides every sort order of the discussion list.
+     *
+     * @return array
+     */
+    public static function discussion_list_sort_order_provider(): array {
+        return [
+            'Last post, newest first' => [discussion_list::SORTORDER_LASTPOST_DESC],
+            'Last post, oldest first' => [discussion_list::SORTORDER_LASTPOST_ASC],
+            'Created, newest first' => [discussion_list::SORTORDER_CREATED_DESC],
+            'Created, oldest first' => [discussion_list::SORTORDER_CREATED_ASC],
+            'Replies, most first' => [discussion_list::SORTORDER_REPLIES_DESC],
+            'Replies, fewest first' => [discussion_list::SORTORDER_REPLIES_ASC],
+            'Discussion name, Z to A' => [discussion_list::SORTORDER_DISCUSSION_DESC],
+            'Discussion name, A to Z' => [discussion_list::SORTORDER_DISCUSSION_ASC],
+            'Started by, Z to A' => [discussion_list::SORTORDER_STARTER_DESC],
+            'Started by, A to Z' => [discussion_list::SORTORDER_STARTER_ASC],
+            'Group, Z to A' => [discussion_list::SORTORDER_GROUP_DESC],
+            'Group, A to Z' => [discussion_list::SORTORDER_GROUP_ASC],
+        ];
+    }
+
+    /**
+     * Test that an unknown discussion list sort order is replaced by the default when saved.
+     */
+    public function test_discussion_list_sort_order_preference_unknown_value(): void {
+        $this->resetAfterTest();
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+
+        \core_user_external::update_user_preferences($user->id, null, [
+            ['type' => 'forum_discussionlistsortorder', 'value' => 13],
+        ]);
+
+        $this->assertEquals(
+            discussion_list::SORTORDER_LASTPOST_DESC,
+            get_user_preferences('forum_discussionlistsortorder', null, $user->id),
+        );
     }
 }
