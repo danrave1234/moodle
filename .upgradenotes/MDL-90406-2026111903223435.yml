@@ -1,0 +1,8 @@
+issueNumber: MDL-90406
+notes:
+  mod_forum:
+    - message: >-
+        A new web service, `mod_forum_get_discussion_list`, has been added to
+        get the discussion list of a forum, with sort order, paging and group
+        parameters.
+      type: improved

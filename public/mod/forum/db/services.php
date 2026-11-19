@@ -232,4 +232,12 @@ $functions = array(
         'type' => 'write',
         'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE],
     ],
+    'mod_forum_get_discussion_list' => [
+        'classname' => 'mod_forum\external\get_discussion_list',
+        'methodname' => 'execute',
+        'description' => 'Get the discussion list of a forum.',
+        'type' => 'read',
+        'ajax' => true,
+        'capabilities' => 'mod/forum:viewdiscussion',
+    ],
 );
