@@ -239,5 +239,6 @@ $functions = array(
         'type' => 'read',
         'ajax' => true,
         'capabilities' => 'mod/forum:viewdiscussion',
+        'loginrequired' => false,
     ],
 );

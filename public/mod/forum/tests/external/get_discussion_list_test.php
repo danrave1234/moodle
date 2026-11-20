@@ -138,6 +138,98 @@ final class get_discussion_list_test extends \core_external\tests\externallib_te
     }
 
     /**
+     * Test who can get the list of a site home forum without logging in, as in view.php.
+     *
+     * @param string $user 'none' for a visitor who is not logged in, or 'guest' for the guest user.
+     * @param bool $forcelogin Whether "Force users to log in" is on.
+     * @param bool $visible Whether the forum is visible.
+     * @param bool $allowed Whether the visitor can get the list.
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('site_home_visitor_provider')]
+    public function test_execute_site_home_visitor(string $user, bool $forcelogin, bool $visible, bool $allowed): void {
+        $this->resetAfterTest();
+        $forum = $this->getDataGenerator()->create_module('forum', ['course' => SITEID, 'visible' => (int) $visible]);
+        set_config('forcelogin', (int) $forcelogin);
+        if ($user === 'guest') {
+            $this->setGuestUser();
+        } else {
+            $this->setUser(null);
+        }
+
+        if (!$allowed) {
+            $this->expectException(\require_login_exception::class);
+        }
+        $result = get_discussion_list::execute($forum->id);
+        $result = external_api::clean_returnvalue(get_discussion_list::execute_returns(), $result);
+        $this->assertSame(0, $result['totalcount']);
+    }
+
+    /**
+     * Provides the site home visitor cases.
+     *
+     * @return array
+     */
+    public static function site_home_visitor_provider(): array {
+        return [
+            'Not logged in, visible forum' => ['none', false, true, true],
+            'Guest, visible forum' => ['guest', false, true, true],
+            'Not logged in, force login on' => ['none', true, true, false],
+            'Not logged in, hidden forum' => ['none', false, false, false],
+            'Guest, hidden forum' => ['guest', false, false, false],
+        ];
+    }
+
+    /**
+     * Test that a visitor who is not logged in cannot get the list of a forum in a course.
+     */
+    public function test_execute_course_forum_not_logged_in(): void {
+        $this->resetAfterTest();
+        [, $forum] = $this->create_forum_with_student();
+        set_config('forcelogin', 0);
+        $this->setUser(null);
+
+        $this->expectException(\require_login_exception::class);
+        get_discussion_list::execute($forum->id);
+    }
+
+    /**
+     * Test that a visitor who is not logged in can call the function through ajax on the site home.
+     */
+    public function test_execute_site_home_through_ajax_not_logged_in(): void {
+        $this->resetAfterTest();
+        $forum = $this->getDataGenerator()->create_module('forum', ['course' => SITEID]);
+        set_config('forcelogin', 0);
+        $this->setUser(null);
+
+        $result = external_api::call_external_function('mod_forum_get_discussion_list', ['forumid' => $forum->id], true);
+
+        $this->assertFalse($result['error'], $result['exception']->message ?? '');
+        $this->assertSame(0, $result['data']['totalcount']);
+    }
+
+    /**
+     * Test that a visitor who is not logged in needs the capability to view discussions.
+     */
+    public function test_execute_site_home_not_logged_in_without_capability(): void {
+        global $CFG;
+
+        $this->resetAfterTest();
+        $forum = $this->getDataGenerator()->create_module('forum', ['course' => SITEID]);
+        assign_capability(
+            'mod/forum:viewdiscussion',
+            CAP_PROHIBIT,
+            $CFG->notloggedinroleid,
+            \context_module::instance($forum->cmid),
+        );
+        set_config('forcelogin', 0);
+        $this->setUser(null);
+
+        $this->expectException(\moodle_exception::class);
+        $this->expectExceptionMessage(get_string('noviewdiscussionspermission', 'forum'));
+        get_discussion_list::execute($forum->id);
+    }
+
+    /**
      * Test that a user without the capability to view discussions is rejected.
      */
     public function test_execute_without_capability(): void {

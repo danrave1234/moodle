@@ -78,7 +78,7 @@ class get_discussion_list extends external_api {
         ?int $perpage = null,
         ?int $groupid = null,
     ): array {
-        global $USER;
+        global $CFG, $PAGE, $USER;
 
         $params = self::validate_parameters(self::execute_parameters(), [
             'forumid' => $forumid,
@@ -94,8 +94,17 @@ class get_discussion_list extends external_api {
             throw new \moodle_exception('invalidforumid', 'forum');
         }
 
-        // Checks the course login and the activity visibility, including hidden activities.
-        self::validate_context($forum->get_context());
+        $context = $forum->get_context();
+        if ($forum->get_course_id() == SITEID && empty($CFG->forcelogin) && (!isloggedin() || isguestuser())) {
+            // As in view.php, visitors who are not logged in can view a site home forum, unless the site forces login.
+            // require_course_login() still asks for a login when the forum is hidden.
+            [, $course, $cm] = get_context_info_array($context->id);
+            require_course_login($course, true, $cm, false, true);
+            $PAGE->set_context($context);
+        } else {
+            // Checks the course login and the activity visibility, including hidden activities.
+            self::validate_context($context);
+        }
 
         $capabilitymanager = \mod_forum\local\container::get_manager_factory()->get_capability_manager($forum);
         if (!$capabilitymanager->can_view_discussions($USER)) {
